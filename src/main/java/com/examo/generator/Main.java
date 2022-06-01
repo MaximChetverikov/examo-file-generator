@@ -1,26 +1,24 @@
 package com.examo.generator;
 
+import com.examo.generator.config.ArgumentsReader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Set;
 
 @Slf4j
 public class Main {
 
     public static void main(String[] args) throws IOException {
-        new ArgumentsReader().readArgs(args);
-        ExamFileGenerator examFileGenerator = new ExamFileGenerator();
+        var configuration = new ArgumentsReader().readArgs(args);
+
+        var examFileGenerator = new ExamFileGenerator(configuration);
         examFileGenerator.generate();
 
-        QuestionsFileGenerator questionsFileGenerator = new QuestionsFileGenerator();
-        Set<String> tags = examFileGenerator.getAllTags();
-
-        questionsFileGenerator.setTags(new ArrayList<>(tags));
+        var questionsFileGenerator = new QuestionsFileGenerator(configuration);
+        questionsFileGenerator.setTags(examFileGenerator.getAllTags());
         questionsFileGenerator.generate();
 
-        GeneratorReport report = new GeneratorReport(examFileGenerator, questionsFileGenerator);
+        var report = new GeneratorReport(examFileGenerator, questionsFileGenerator, configuration);
         report.print();
     }
 
